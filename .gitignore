@@ -1,0 +1,14 @@
+# Ignore venv files
+bin/
+include/
+lib/
+share/
+pyvenv.cfg
+lib64
+
+# Generated files
+*.png
+!example.png
+
+# Input files
+qrcode.json
