@@ -1,6 +1,6 @@
 # Covid NZ QR Code Generator
 
-Your QR code json file should has five fields:
+Your QR code has five fields:
 
 | Field | Meaning |
 | --- | --- |
@@ -10,4 +10,7 @@ Your QR code json file should has five fields:
 | opn | The place name. This is what shows up at the top. This would typically be a business's name |
 | adr | This is the address. As usual, this can be anything. You can use `\n` characters to add new lines. |
 
-The json is converted to base64 and the b64 string has `NZCOVIDTRACER:` appended to the start of it.
+To run the code, first install the requirements with `pip install -r requirements.txt`.
+Next run the code with `python gen_qr_code.py`.  
+The program will ask you for you inputs into the fields.
+Some of these have default values, so you can simply press enter to autofill it.
