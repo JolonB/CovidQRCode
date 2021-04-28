@@ -2,15 +2,21 @@ import base64
 import random
 
 import qrcode
+from qrcode import constants as qrcon
 from PIL import Image, ImageDraw, ImageFont
 
 
 values = [
-    ("gln", "global location number", "{:013d}".format(random.randrange(10 ** 13))),
-    ("ver", "version", "c19:1"),
-    ("typ", "action type", "entry"),
-    ("opn", "place name", None),
-    ("adr", "address. Use \\n to indicate new lines", None),
+    (
+        "gln",
+        "global location number",
+        "{:013d}".format(random.randrange(10 ** 13)),
+        False,
+    ),
+    ("ver", "version", "c19:1", True),
+    ("typ", "action type", "entry", True),
+    ("opn", "place name", None, False),
+    ("adr", "address. Use \\n to indicate new lines", None, False),
 ]
 inputs = {}
 
@@ -19,6 +25,13 @@ TITLE_SIZE = 90
 SUBTITLE_SIZE = 72
 TITLE_FILE = "font/title.ttf"
 SUBTITLE_FILE = "font/subtitle.ttf"
+# Highest error correction at lowest index
+E_CORRECTION = [
+    qrcon.ERROR_CORRECT_H,
+    qrcon.ERROR_CORRECT_Q,
+    qrcon.ERROR_CORRECT_M,
+    qrcon.ERROR_CORRECT_L,
+]
 
 
 def validate_input(
@@ -26,7 +39,11 @@ def validate_input(
     default_value: str = None,
     class_: type = None,
     valid_values: list = None,
+    skip: bool = False,
 ):
+    # If we choose to skip this, just return the default value
+    if skip:
+        return default_value
     # Validation of input
     while True:
         response = None
@@ -119,12 +136,13 @@ def create_poster(foreground: Image, title: str, subtitle: str):
 
 
 if __name__ == "__main__":
-    for field, help_text, default in values:
+    for field, help_text, default, do_skip in values:
         inputs[field] = validate_input(
             "Enter the {}".format(help_text)
             + ('. Default value is "{}"'.format(default) if default else "")
             + ": ",
             default_value=default,
+            skip=do_skip,
         )
 
     with open("assets/qrcode_blank") as f:
@@ -140,15 +158,29 @@ if __name__ == "__main__":
         # Add "NZCOVIDTRACER:" to start of string
         qr_string = "NZCOVIDTRACER:{}".format(encoded_qr)
 
-        # Generate a version 15 (77x77) QR code containing qr_string
-        qr = qrcode.QRCode(
-            version=15, border=0, error_correction=qrcode.constants.ERROR_CORRECT_L
-        )
-        img = qr.add_data(qr_string)
-        qr.make()
-
-        # Make the QR code
-        img = qr.make_image()
+        # Generate QR code with maximum error correction
+        e_correct_index = 0
+        while True:
+            try:
+                qr = qrcode.QRCode(
+                    version=1, border=0, error_correction=E_CORRECTION[e_correct_index]
+                )
+                img = qr.add_data(qr_string)
+                qr.make()
+                # Make the QR code
+                img = qr.make_image()
+            except (ValueError, qrcode.exceptions.DataOverflowError):
+                # If QR code is too big, reduce error correction
+                print("Reducing error correction...")
+                e_correct_index += 1
+            except IndexError as e:
+                # If error correction cannot be reduced any lower, exit
+                raise ValueError(
+                    "Input strings were too long. Cannot reduce error correction any further to produce a valid QR code."
+                ) from e
+            else:
+                # Only break if no errors caught
+                break
 
         # Check if user wants a poster
         poster_yn = validate_input(
@@ -160,14 +192,14 @@ if __name__ == "__main__":
         if poster_yn == "y":
             title = remove_n(inputs["opn"])
             title = validate_input(
-                'Enter a title. Default is {}. "\\n" will be replaced by ", ": '.format(
+                'Enter a title. "\\n" will be replaced by ", ". Default is {}: '.format(
                     title
                 ),
                 default_value=title,
             )
             subtitle = remove_n(inputs["adr"])
             subtitle = validate_input(
-                'Enter a title. Default is {}. "\\n" will be replaced by ", ": '.format(
+                'Enter a subtitle. "\\n" will be replaced by ", ". Default is {}: '.format(
                     subtitle
                 ),
                 default_value=subtitle,

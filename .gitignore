@@ -9,6 +9,8 @@ lib64
 # Generated files
 *.png
 !samples/*/*
+!example.png
+!poster_blank.png
 
 # Input files
 qrcode.json
