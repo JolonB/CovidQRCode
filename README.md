@@ -4,7 +4,7 @@
 
 ## Background
 
-The official NZ COVID QR codes are available only to businesses that apply for them.
+The official NZ COVID QR codes were available only to businesses that apply for them.
 This is all well and good, but what if you want to make your own, like the one at the top of this README?
 Well, now you can!
 
@@ -46,3 +46,17 @@ The code will prompt you for a few inputs:
 - generate a poster: enter `y` (or simply press enter) to generate a poster, otherwise enter `n` to just save the code
 - title: either enter the title for the poster or press enter to use the place name (with line breaks replaced with `, `)
 - subtitle: either enter the subtitle for the poster or press enter to use the address (with line breaks replaced with `, `)
+
+## Scanning the QR code
+
+It's no fun to generate a poster if you can't scan it, especially now that the NZ COVID Tracer app has been removed from app stores.
+Regular QR code scanners won't cut it either, as they won't actually decode the data stored in the code.
+
+If you're running Android, you're in luck.
+The original COVID tracer app can be downloaded from [here](https://apkpure.com/nz-covid-tracer/nz.govt.health.covidtracer) or [here](https://www.apkmirror.com/apk/ministry-of-health-nz/nz-covid-tracer/).
+
+If you're running iOS, get an Android.
+
+## How it works
+
+Coming soon...
