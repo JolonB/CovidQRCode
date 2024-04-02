@@ -29,7 +29,7 @@ This requires some libraries to run, which can be done with:
 ```shell
 python3 -m venv .
 . bin/activate
-pip install -r requirements
+pip install -r requirements.txt
 ```
 
 After that is done, you can run it with:
